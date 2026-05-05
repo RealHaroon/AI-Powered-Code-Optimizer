@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CodeOptAI – Exhibition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+:root{
+  --text-xs:clamp(.75rem,.7rem + .25vw,.875rem);
+  --text-sm:clamp(.875rem,.8rem + .35vw,1rem);
+  --text-base:clamp(1rem,.95rem + .25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;
+  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+  --space-12:3rem;--space-16:4rem;
+  --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;
+  --radius-xl:1rem;--radius-full:9999px;
+  --transition:180ms cubic-bezier(.16,1,.3,1);
+  --font-body:'Inter','Helvetica Neue',sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code',monospace;
+}
+:root,[data-theme="dark"]{
+  --bg:#0d0f10;--surface:#131619;--surface-2:#191d21;
+  --surface-off:#1f2428;--surface-dyn:#252b31;
+  --divider:#2a3038;--border:#313a42;
+  --text:#e2e8f0;--text-muted:#8b9ab0;--text-faint:#4a5568;--text-inv:#0d0f10;
+  --primary:#38bdf8;--primary-h:#7dd3fc;--primary-hl:#0c2840;
+  --success:#4ade80;--success-h:#86efac;--success-hl:#052e16;
+  --warning:#fb923c;--warning-h:#fdba74;--warning-hl:#431407;
+  --error:#f87171;--error-h:#fca5a5;--error-hl:#450a0a;
+  --purple:#a78bfa;--purple-hl:#2e1065;
+  --sh-sm:0 1px 3px oklch(0 0 0/.3);
+  --sh-md:0 4px 12px oklch(0 0 0/.4);
+  --sh-lg:0 12px 32px oklch(0 0 0/.6);
+}
+[data-theme="light"]{
+  --bg:#f8fafc;--surface:#fff;--surface-2:#f1f5f9;
+  --surface-off:#e2e8f0;--surface-dyn:#cbd5e1;
+  --divider:#e2e8f0;--border:#cbd5e1;
+  --text:#0f172a;--text-muted:#475569;--text-faint:#94a3b8;--text-inv:#f8fafc;
+  --primary:#0284c7;--primary-h:#0369a1;--primary-hl:#e0f2fe;
+  --success:#16a34a;--success-h:#15803d;--success-hl:#dcfce7;
+  --warning:#ea580c;--warning-h:#c2410c;--warning-hl:#fff7ed;
+  --error:#dc2626;--error-h:#b91c1c;--error-hl:#fef2f2;
+  --purple:#7c3aed;--purple-hl:#ede9fe;
+  --sh-sm:0 1px 3px oklch(.2 0 0/.06);
+  --sh-md:0 4px 12px oklch(.2 0 0/.08);
+  --sh-lg:0 12px 32px oklch(.2 0 0/.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-sm);color:var(--text);background:var(--bg);overflow-x:hidden}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+::selection{background:oklch(from var(--primary) l c h/.25);color:var(--text)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:var(--radius-sm)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--surface-dyn);border-radius:3px}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:48px 1fr;height:100dvh;overflow:hidden}
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:var(--space-4);padding:0 var(--space-5);background:var(--surface);border-bottom:1px solid var(--border);z-index:100}
+.logo{display:flex;align-items:center;gap:var(--space-2);text-decoration:none;color:var(--text);font-size:var(--text-sm);font-weight:700;letter-spacing:-.02em;flex-shrink:0}
+.logo-accent{color:var(--primary)}
+.topbar-sub{font-size:var(--text-xs);color:var(--text-muted);flex:1}
+.topbar-right{display:flex;align-items:center;gap:var(--space-3);margin-left:auto}
+
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:var(--space-4) var(--space-3);gap:2px;overflow-y:auto}
+.sec-label{font-size:10px;font-weight:700;color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase;padding:var(--space-3) var(--space-2) var(--space-1);margin-top:var(--space-2)}
+.nav-item{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:500;color:var(--text-muted);cursor:pointer;transition:color var(--transition),background var(--transition);user-select:none}
+.nav-item:hover{color:var(--text);background:var(--surface-off)}
+.nav-item.active{color:var(--primary);background:var(--primary-hl)}
+.nav-icon{flex-shrink:0;width:14px;height:14px}
+.sidebar-footer{margin-top:auto;padding-top:var(--space-4);border-top:1px solid var(--divider)}
+
+.main{overflow-y:auto;display:flex;flex-direction:column}
+.panel{display:none;flex-direction:column;height:100%}
+.panel.active{display:flex}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:600;cursor:pointer;transition:all var(--transition);white-space:nowrap;border:1px solid transparent}
+.btn-primary{background:var(--primary);color:var(--text-inv);border-color:var(--primary)}
+.btn-primary:hover{background:var(--primary-h)}
+.btn-ghost{background:transparent;color:var(--text-muted);border-color:var(--border)}
+.btn-ghost:hover{background:var(--surface-off);color:var(--text)}
+.btn-success{background:var(--success);color:#000;border-color:var(--success)}
+.btn-success:hover{background:var(--success-h)}
+.btn-danger{background:var(--error-hl);color:var(--error);border-color:var(--error)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:var(--radius-full);font-size:10px;font-weight:600;line-height:1.5}
+.badge-primary{background:var(--primary-hl);color:var(--primary)}
+.badge-success{background:var(--success-hl);color:var(--success)}
+.badge-warning{background:var(--warning-hl);color:var(--warning)}
+.badge-error{background:var(--error-hl);color:var(--error)}
+.badge-purple{background:var(--purple-hl);color:var(--purple)}
+
+/* ── ICON BTN ── */
+.icon-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-md);color:var(--text-muted);transition:color var(--transition),background var(--transition)}
+.icon-btn:hover{color:var(--text);background:var(--surface-off)}
+
+/* ── INPUTS ── */
+.select-input{padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface-off);color:var(--text);font-size:var(--text-xs);font-weight:500;cursor:pointer;appearance:none;padding-right:var(--space-8);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b9ab0' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color var(--transition)}
+.select-input:hover,.select-input:focus{border-color:var(--primary);outline:none}
+
+.text-input{padding:var(--space-2) var(--space-3);border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface-off);color:var(--text);font-size:var(--text-xs);width:100%;transition:border-color var(--transition)}
+.text-input:focus{border-color:var(--primary);outline:none}
+.text-input::placeholder{color:var(--text-faint)}
+
+/* ── API KEY BANNER ── */
+.api-banner{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);background:color-mix(in oklch,var(--warning) 10%,var(--surface));border-bottom:1px solid var(--warning-hl);font-size:var(--text-xs)}
+.api-banner.hidden{display:none}
+.api-banner-input{flex:1;max-width:340px;font-family:var(--font-mono);font-size:12px}
+
+/* ── OPTIMIZER PANEL ── */
+.opt-layout{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr auto auto;height:100%;overflow:hidden}
+.opt-header{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-3);padding:var(--space-4) var(--space-6);border-bottom:1px solid var(--border);background:var(--surface)}
+.page-title{font-size:var(--text-lg);font-weight:700;letter-spacing:-.02em}
+.header-right{display:flex;align-items:center;gap:var(--space-2);margin-left:auto;flex-wrap:wrap}
+
+.editor-pane{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+.editor-pane:last-of-type{border-right:none}
+.editor-bar{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-4);background:var(--surface-off);border-bottom:1px solid var(--border)}
+.editor-label{font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase}
+
+.code-editor{flex:1;resize:none;background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:13px;line-height:1.65;padding:var(--space-4);border:none;outline:none;overflow-y:auto;tab-size:2}
+.code-output{flex:1;background:var(--bg);font-family:var(--font-mono);font-size:13px;line-height:1.65;padding:var(--space-4);overflow-y:auto;white-space:pre-wrap;word-break:break-word;color:var(--text)}
+.code-output.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:var(--space-3);color:var(--text-faint);font-family:var(--font-body);font-size:var(--text-sm)}
+
+/* ── DIFF VIEW ── */
+.diff-view{flex:1;background:var(--bg);font-family:var(--font-mono);font-size:12px;line-height:1.7;overflow-y:auto}
+.diff-line{display:flex;gap:var(--space-2);padding:0 var(--space-4);min-height:1.7em}
+.diff-line.added{background:color-mix(in oklch,var(--success) 8%,transparent)}
+.diff-line.removed{background:color-mix(in oklch,var(--error) 8%,transparent)}
+.diff-line.context{color:var(--text-muted)}
+.diff-prefix{width:14px;flex-shrink:0;font-weight:700}
+.diff-prefix.a{color:var(--success)}
+.diff-prefix.r{color:var(--error)}
+.diff-prefix.c{color:var(--text-faint)}
+.diff-content.added{color:var(--success)}
+.diff-content.removed{color:var(--error)}
+.diff-content.context{color:var(--text-muted)}
+
+/* ── TAB BAR (for output area) ── */
+.tab-bar{display:flex;align-items:center;gap:2px;padding:var(--space-2) var(--space-4);background:var(--surface-off);border-bottom:1px solid var(--border)}
+.tab{padding:var(--space-1) var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:500;color:var(--text-muted);cursor:pointer;transition:color var(--transition),background var(--transition)}
+.tab:hover{color:var(--text);background:var(--surface-dyn)}
+.tab.active{color:var(--primary);background:var(--primary-hl)}
+
+/* ── METRICS BAR ── */
+.metrics-bar{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-3);padding:var(--space-3) var(--space-6);background:var(--surface);border-top:1px solid var(--border)}
+.metric{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted)}
+.metric strong{color:var(--text);font-weight:600}
+.metric-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.metric.good{color:var(--success)}.metric.warn{color:var(--warning)}.metric.bad{color:var(--error)}
+.mdiv{width:1px;height:16px;background:var(--border)}
+
+/* ── LOADING ── */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.dots span{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--primary);animation:pulse 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{background:linear-gradient(90deg,var(--surface-off) 25%,var(--surface-dyn) 50%,var(--surface-off) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:var(--radius-sm)}
+
+/* ── ISSUES ── */
+.issue-list{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-6);overflow-y:auto}
+.issue-card{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);transition:border-color var(--transition),box-shadow var(--transition);cursor:default}
+.issue-card:hover{border-color:var(--primary);box-shadow:var(--sh-sm)}
+.issue-sev{flex-shrink:0;width:18px;height:18px;margin-top:2px}
+.issue-body{flex:1;min-width:0}
+.issue-title{font-size:var(--text-xs);font-weight:600;color:var(--text);margin-bottom:2px}
+.issue-desc{font-size:var(--text-xs);color:var(--text-muted);line-height:1.5}
+.issue-fix{font-size:var(--text-xs);color:var(--success);margin-top:3px;font-style:italic}
+.issue-line{font-size:10px;font-family:var(--font-mono);color:var(--text-faint);margin-top:3px}
+
+/* ── ANALYSIS PANEL ── */
+.analysis-layout{display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:hidden}
+.analysis-right{display:flex;flex-direction:column;overflow:hidden}
+.score-bar{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-6);background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+
+/* ── CHAT ── */
+.chat-layout{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.chat-header{padding:var(--space-4) var(--space-6);border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.chat-msgs{flex:1;overflow-y:auto;padding:var(--space-5) var(--space-6);display:flex;flex-direction:column;gap:var(--space-4)}
+.bubble{display:flex;gap:var(--space-3);max-width:85%}
+.bubble.user{flex-direction:row-reverse;margin-left:auto}
+.avatar{width:28px;height:28px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;background:var(--primary-hl);color:var(--primary)}
+.bubble.user .avatar{background:var(--surface-dyn);color:var(--text-muted)}
+.msg{padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);font-size:var(--text-xs);line-height:1.65;background:var(--surface);border:1px solid var(--border);color:var(--text)}
+.bubble.user .msg{background:var(--primary-hl);border-color:var(--primary);color:var(--primary)}
+.msg code{font-family:var(--font-mono);font-size:11px;background:var(--surface-off);padding:1px 4px;border-radius:var(--radius-sm)}
+.msg pre{background:var(--surface-off);padding:var(--space-3);border-radius:var(--radius-md);font-family:var(--font-mono);font-size:11px;overflow-x:auto;margin-top:var(--space-2);white-space:pre-wrap}
+.chat-input-row{padding:var(--space-4) var(--space-6);border-top:1px solid var(--border);background:var(--surface);display:flex;gap:var(--space-2)}
+.chat-input{flex:1;padding:var(--space-3) var(--space-4);border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface-off);color:var(--text);font-size:var(--text-xs);outline:none;resize:none;line-height:1.5;max-height:120px;transition:border-color var(--transition)}
+.chat-input:focus{border-color:var(--primary)}
+.chat-input::placeholder{color:var(--text-faint)}
+
+/* ── DASHBOARD ── */
+.dash-layout{padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-6);overflow-y:auto}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--space-4)}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);transition:border-color var(--transition),box-shadow var(--transition)}
+.kpi-card:hover{border-color:var(--primary);box-shadow:var(--sh-sm)}
+.kpi-label{font-size:var(--text-xs);color:var(--text-muted);font-weight:500;margin-bottom:var(--space-2);display:flex;align-items:center;gap:var(--space-2)}
+.kpi-val{font-size:var(--text-xl);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi-delta{font-size:var(--text-xs);font-weight:600;margin-top:var(--space-1)}
+.kpi-delta.pos{color:var(--success)}.kpi-delta.neg{color:var(--error)}
+
+/* ── TABLE ── */
+.data-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.data-table table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:var(--space-3) var(--space-4);font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface-off)}
+.data-table td{padding:var(--space-3) var(--space-4);font-size:var(--text-xs);color:var(--text);border-bottom:1px solid var(--divider);font-variant-numeric:tabular-nums}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface-off)}
+.mono{font-family:var(--font-mono)}
+
+/* ── SETTINGS ── */
+.settings-wrap{max-width:640px;margin:0 auto;padding:var(--space-8) var(--space-6);display:flex;flex-direction:column;gap:var(--space-6);overflow-y:auto}
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.settings-head{padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--border);background:var(--surface-off)}
+.settings-head-title{font-size:var(--text-sm);font-weight:700}
+.settings-head-sub{font-size:var(--text-xs);color:var(--text-muted);margin-top:2px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--divider);gap:var(--space-4)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:var(--text-xs);font-weight:500}
+.settings-row-sub{font-size:var(--text-xs);color:var(--text-muted);margin-top:2px}
+
+/* Toggle */
+.toggle{position:relative;display:inline-flex;align-items:center;cursor:pointer}
+.toggle input{position:absolute;opacity:0;width:0;height:0}
+.t-track{width:36px;height:20px;background:var(--surface-dyn);border-radius:var(--radius-full);transition:background var(--transition);flex-shrink:0}
+.toggle input:checked+.t-track{background:var(--primary)}
+.t-thumb{position:absolute;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform var(--transition);pointer-events:none}
+.toggle input:checked~.t-thumb{transform:translateX(16px)}
+
+/* ── SYNTAX ── */
+.kw{color:#c084fc}.fn{color:#38bdf8}.str{color:#4ade80}.cmt{color:#4a5568;font-style:italic}.num{color:#fb923c}
+[data-theme="light"] .kw{color:#7c3aed}[data-theme="light"] .fn{color:#0284c7}[data-theme="light"] .str{color:#16a34a}[data-theme="light"] .cmt{color:#94a3b8}[data-theme="light"] .num{color:#ea580c}
+
+/* ── IMPROVEMENT CHIPS ── */
+.improve-list{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3)}
+.improve-item{display:flex;align-items:flex-start;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);background:color-mix(in oklch,var(--success) 6%,var(--surface));border-left:2px solid var(--success)}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:var(--space-6);right:var(--space-6);display:flex;flex-direction:column;gap:var(--space-2);z-index:9999}
+.toast{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--sh-lg);font-size:var(--text-xs);font-weight:500;animation:slideIn .3s cubic-bezier(.16,1,.3,1)}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.toast.success{border-color:var(--success);color:var(--success)}
+.toast.error{border-color:var(--error);color:var(--error)}
+.toast.info{border-color:var(--primary);color:var(--primary)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:oklch(0 0 0/.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:var(--space-4);backdrop-filter:blur(4px)}
+.modal-overlay.hidden{display:none}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-6);max-width:480px;width:100%;box-shadow:var(--sh-lg)}
+.modal-title{font-size:var(--text-lg);font-weight:700;margin-bottom:var(--space-2)}
+.modal-sub{font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-5)}
+.modal-actions{display:flex;gap:var(--space-2);justify-content:flex-end;margin-top:var(--space-6)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .shell{grid-template-columns:1fr;grid-template-rows:48px 44px 1fr}
+  .sidebar{grid-row:2;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border);padding:0 var(--space-2)}
+  .sec-label,.sidebar-footer{display:none}
+  .opt-layout{grid-template-columns:1fr}
+  .analysis-layout{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="logo" href="#">
+    <svg class="logo-accent" aria-label="CodeOptAI" width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    CodeOpt<span class="logo-accent">AI</span>
+  </a>
+  <span style="width:1px;height:20px;background:var(--border)"></span>
+  <span class="topbar-sub">Exhibition · Powered by Grok llma- 3.3 70b-versatile</span>
+  <div class="topbar-right">
+    <span class="badge badge-success" id="ai-status-badge">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> AI Ready
+    </span>
+    <button class="icon-btn" id="settings-btn" aria-label="Settings" title="Settings"><i data-lucide="settings"></i></button>
+    <button class="icon-btn" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" aria-label="Navigation">
+  <span class="sec-label">Tools</span>
+  <div class="nav-item active" data-panel="optimizer" tabindex="0"><i data-lucide="zap" class="nav-icon"></i> Optimizer</div>
+  <div class="nav-item" data-panel="diff" tabindex="0"><i data-lucide="git-diff" class="nav-icon"></i> Diff View</div>
+  <div class="nav-item" data-panel="analysis" tabindex="0"><i data-lucide="search-code" class="nav-icon"></i> Analysis</div>
+  <div class="nav-item" data-panel="chat" tabindex="0"><i data-lucide="message-square-code" class="nav-icon"></i> AI Chat</div>
+  <span class="sec-label">Reports</span>
+  <div class="nav-item" data-panel="dashboard" tabindex="0"><i data-lucide="bar-chart-2" class="nav-icon"></i> Dashboard</div>
+  <div class="nav-item" data-panel="history" tabindex="0"><i data-lucide="history" class="nav-icon"></i> History</div>
+  <div class="sidebar-footer">
+    <div class="nav-item" data-panel="settings" tabindex="0"><i data-lucide="settings" class="nav-icon"></i> Settings</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- API KEY BANNER -->
+  <div class="api-banner" id="api-banner">
+    <i data-lucide="key" style="width:14px;height:14px;color:var(--warning);flex-shrink:0"></i>
+    <span style="color:var(--warning);font-weight:600">Grok API Key required —</span>
+    <input class="text-input api-banner-input" id="api-key-input" type="password" placeholder="Paste your Grok API key here (AIza...)"/>
+    <button class="btn btn-primary" id="save-key-btn" style="flex-shrink:0">Save Key</button>
+    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" style="flex-shrink:0">Get Free Key <i data-lucide="external-link" style="width:11px;height:11px"></i></a>
+  </div>
+
+  <!-- ═══ OPTIMIZER ═══ -->
+  <section class="panel active" id="panel-optimizer">
+    <div class="opt-layout">
+      <div class="opt-header">
+        <h1 class="page-title">Code Optimizer</h1>
+        <div class="header-right">
+          <select class="select-input" id="lang-select" title="Language">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+            <option value="go">Go</option>
+            <option value="rust">Rust</option>
+          </select>
+          <select class="select-input" id="mode-select">
+            <option value="all">All Optimizations</option>
+            <option value="performance">Performance</option>
+            <option value="readability">Readability</option>
+            <option value="security">Security</option>
+            <option value="memory">Memory</option>
+          </select>
+          <button class="btn btn-ghost" id="clear-btn"><i data-lucide="trash-2"></i></button>
+          <button class="btn btn-success" id="export-pdf-btn" disabled><i data-lucide="file-text"></i> Export PDF</button>
+          <button class="btn btn-primary" id="optimize-btn"><i data-lucide="zap"></i> <span id="opt-label">Optimize</span></button>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="editor-pane">
+        <div class="editor-bar">
+          <span class="editor-label">Input Code</span>
+          <span style="margin-left:auto;font-size:10px;font-family:var(--font-mono);color:var(--text-faint)" id="line-count">0 lines</span>
+        </div>
+        <textarea class="code-editor" id="code-input" spellcheck="false" placeholder="# Paste your code here..."></textarea>
+      </div>
+
+      <!-- Output with tabs -->
+      <div class="editor-pane" style="border-right:none">
+        <div class="tab-bar">
+          <span class="editor-label" style="margin-right:var(--space-2)">Output</span>
+          <button class="tab active" data-tab="code">Code</button>
+          <button class="tab" data-tab="diff">Diff</button>
+          <button class="btn btn-ghost" id="copy-btn" style="padding:2px 8px;font-size:11px;margin-left:auto"><i data-lucide="copy"></i> Copy</button>
+        </div>
+        <div id="output-code" class="code-output empty">
+          <i data-lucide="zap" style="width:36px;height:36px;opacity:.3"></i>
+          <p><strong>Optimized code appears here</strong></p>
+          <p style="font-size:var(--text-xs)">Paste code → choose language → click Optimize</p>
+        </div>
+        <div id="output-diff" class="diff-view" style="display:none"></div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-bar" id="metrics-bar">
+        <div class="metric"><i data-lucide="code-2" style="width:12px;height:12px"></i> Lines: <strong id="m-lines">—</strong></div>
+        <div class="mdiv"></div>
+        <div class="metric" id="m-complexity-chip">Complexity: <strong id="m-complexity">—</strong></div>
+        <div class="mdiv"></div>
+        <div class="metric" id="m-perf-chip">Reduction: <strong id="m-reduction">—</strong></div>
+        <div class="mdiv"></div>
+        <div class="metric" id="m-score-chip">Score: <strong id="m-score">—</strong></div>
+        <div class="mdiv"></div>
+        <div class="metric" id="m-issues-chip">Issues: <strong id="m-issues">—</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DIFF VIEW (standalone panel) ═══ -->
+  <section class="panel" id="panel-diff">
+    <div class="opt-header" style="border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6)">
+      <h1 class="page-title">Diff View</h1>
+      <span class="badge badge-primary" id="diff-stats">—</span>
+      <div style="margin-left:auto;display:flex;gap:var(--space-2)">
+        <button class="btn btn-ghost" id="diff-copy-btn"><i data-lucide="copy"></i> Copy Diff</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:hidden;border-top:none">
+      <div style="display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)">
+        <div class="editor-bar"><span class="editor-label" style="color:var(--error)">— Original</span></div>
+        <div class="diff-view" id="diff-original"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;overflow:hidden">
+        <div class="editor-bar"><span class="editor-label" style="color:var(--success)">+ Optimized</span></div>
+        <div class="diff-view" id="diff-optimized"></div>
+      </div>
+    </div>
+    <div style="padding:var(--space-3) var(--space-6);background:var(--surface);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted);display:flex;gap:var(--space-4)">
+      <span><span style="color:var(--success);font-weight:700">+ Added</span> lines are shown in green</span>
+      <span><span style="color:var(--error);font-weight:700">− Removed</span> lines are shown in red</span>
+      <span style="color:var(--text-faint)">Context lines are dimmed</span>
+    </div>
+  </section>
+
+  <!-- ═══ ANALYSIS ═══ -->
+  <section class="panel" id="panel-analysis">
+    <div class="opt-header" style="border-bottom:1px solid var(--border);background:var(--surface)">
+      <h1 class="page-title">Code Analysis</h1>
+      <div class="header-right">
+        <select class="select-input" id="analysis-lang">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="java">Java</option>
+          <option value="cpp">C++</option>
+        </select>
+        <button class="btn btn-primary" id="analyze-btn"><i data-lucide="search-code"></i> <span id="analyze-label">Analyze</span></button>
+      </div>
+    </div>
+    <div class="analysis-layout" style="flex:1">
+      <div style="display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)">
+        <div class="editor-bar"><span class="editor-label">Code to Analyze</span></div>
+        <textarea class="code-editor" id="analysis-input" spellcheck="false" placeholder="# Paste code for AI-powered analysis..."></textarea>
+      </div>
+      <div class="analysis-right">
+        <div class="score-bar" id="score-bar" style="display:none">
+          <div>
+            <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:2px">Quality Score</div>
+            <div style="font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums" id="quality-score">—</div>
+          </div>
+          <div style="flex:1;display:flex;gap:var(--space-3);flex-wrap:wrap">
+            <span class="badge badge-error" id="err-badge">0 errors</span>
+            <span class="badge badge-warning" id="warn-badge">0 warnings</span>
+            <span class="badge badge-primary" id="info-badge">0 info</span>
+          </div>
+        </div>
+        <div class="issue-list" id="analysis-results" style="flex:1;overflow-y:auto">
+          <div style="padding:var(--space-16);text-align:center;color:var(--text-faint)">
+            <i data-lucide="search" style="width:32px;height:32px;margin:0 auto var(--space-3);opacity:.4;display:block"></i>
+            <p style="font-size:var(--text-xs)">Paste code and click Analyze for AI-powered insights</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CHAT ═══ -->
+  <section class="panel" id="panel-chat">
+    <div class="chat-layout">
+      <div class="chat-header">
+        <h1 class="page-title">AI Code Assistant</h1>
+        <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:2px">Ask anything — powered by Grok llma- 3.3 70b-versatile in real-time</p>
+      </div>
+      <div class="chat-msgs" id="chat-msgs" role="log" aria-live="polite">
+        <div class="bubble">
+          <div class="avatar">AI</div>
+          <div class="msg">👋 Hi! I'm your Grok-powered code assistant.<br><br>Ask me about <strong>refactoring, algorithms, design patterns, security, or performance</strong>. You can paste code directly into the chat and I'll analyze it in real time.</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ask about code... or paste code directly here"></textarea>
+        <button class="btn btn-primary" id="send-btn" style="align-self:flex-end"><i data-lucide="send"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <section class="panel" id="panel-dashboard">
+    <div class="dash-layout">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4)">
+          <h1 class="page-title">Dashboard</h1>
+          <span class="badge badge-primary">This Session</span>
+        </div>
+        <div class="kpi-grid" id="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label"><i data-lucide="zap" style="width:12px;height:12px;color:var(--primary)"></i> Optimizations</div>
+            <div class="kpi-val" id="kpi-opts">0</div>
+            <div class="kpi-delta pos">session total</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><i data-lucide="trending-up" style="width:12px;height:12px;color:var(--success)"></i> Avg Score Gain</div>
+            <div class="kpi-val" id="kpi-gain">—</div>
+            <div class="kpi-delta pos">quality improvement</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><i data-lucide="bug" style="width:12px;height:12px;color:var(--error)"></i> Issues Fixed</div>
+            <div class="kpi-val" id="kpi-fixed">0</div>
+            <div class="kpi-delta pos">total this session</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><i data-lucide="file-code" style="width:12px;height:12px;color:var(--warning)"></i> Lines Reduced</div>
+            <div class="kpi-val" id="kpi-lines">0</div>
+            <div class="kpi-delta pos">net reduction</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h2 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--space-4)">Optimization History</h2>
+        <div class="data-table">
+          <table>
+            <thead>
+              <tr><th>Snippet</th><th>Language</th><th>Before</th><th>After</th><th>Issues</th><th>Complexity</th><th>Time</th></tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-faint);padding:var(--space-8)">No optimizations yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HISTORY ═══ -->
+  <section class="panel" id="panel-history">
+    <div style="padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--border);background:var(--surface)">
+      <h1 class="page-title">Full History</h1>
+      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-top:2px">All optimizations this session</p>
+    </div>
+    <div style="padding:var(--space-6);overflow-y:auto;flex:1">
+      <div id="history-cards" style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <div style="text-align:center;padding:var(--space-16);color:var(--text-faint)">
+          <i data-lucide="history" style="width:32px;height:32px;margin:0 auto var(--space-3);opacity:.4;display:block"></i>
+          <p style="font-size:var(--text-xs)">Optimize some code to see history here</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SETTINGS ═══ -->
+  <section class="panel" id="panel-settings">
+    <div style="padding:var(--space-5) var(--space-6);border-bottom:1px solid var(--border);background:var(--surface)">
+      <h1 class="page-title">Settings</h1>
+    </div>
+    <div class="settings-wrap">
+      <div class="settings-card">
+        <div class="settings-head">
+          <div class="settings-head-title">API Configuration</div>
+          <div class="settings-head-sub">Your Grok API key is stored in memory only — never sent anywhere except Google's servers</div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Grok API Key</div><div class="settings-row-sub">Get a free key from Google AI Studio</div></div>
+          <div style="display:flex;gap:var(--space-2)">
+            <input class="text-input" id="settings-api-input" type="password" placeholder="AIza..." style="width:240px;font-family:var(--font-mono);font-size:12px"/>
+            <button class="btn btn-primary" id="settings-save-btn">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-head"><div class="settings-head-title">AI Model</div></div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Model</div></div>
+          <select class="select-input"><option>Grok llama-3.3-70b-versatile</option><option>Grok llama-3.3-70b-versatile</option></select>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Aggressiveness</div><div class="settings-row-sub">How deeply to restructure code</div></div>
+          <select class="select-input"><option>Conservative</option><option selected>Balanced</option><option>Aggressive</option></select>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-head"><div class="settings-head-title">Optimization Rules</div></div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Performance Analysis</div><div class="settings-row-sub">O(n²) loops, algorithm selection</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="t-track"></span><span class="t-thumb"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Security Scanning</div><div class="settings-row-sub">SQL injection, eval, hardcoded secrets</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="t-track"></span><span class="t-thumb"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Readability</div><div class="settings-row-sub">Naming, type hints, docstrings</div></div>
+          <label class="toggle"><input type="checkbox" checked><span class="t-track"></span><span class="t-thumb"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Memory Optimization</div></div>
+          <label class="toggle"><input type="checkbox"><span class="t-track"></span><span class="t-thumb"></span></label>
+        </div>
+      </div>
+      <div class="settings-card">
+        <div class="settings-head"><div class="settings-head-title">Editor</div></div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Theme</div></div>
+          <select class="select-input" id="theme-select"><option value="dark">Dark</option><option value="light">Light</option></select>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Font Size</div></div>
+          <select class="select-input" id="font-size-select"><option value="12">12px</option><option value="13" selected>13px</option><option value="14">14px</option><option value="16">16px</option></select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+(function(){
+"use strict";
+
+const API_BASE = "http://localhost:8000";
+
+/* ── STATE ── */
+let apiKey = "";
+let lastOptimized = null;
+let lastOriginal = "";
+let sessionStats = { opts: 0, totalGain: 0, issues: 0, lines: 0 };
+let history = [];
+
+/* ── THEME ── */
+const html = document.documentElement;
+const themeToggle = document.querySelector("[data-theme-toggle]");
+let theme = "dark";
+function setTheme(t){
+  theme = t;
+  html.setAttribute("data-theme", t);
+  if(themeToggle) themeToggle.innerHTML = t==="dark"
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  const ts = document.getElementById("theme-select");
+  if(ts) ts.value = t;
+}
+themeToggle?.addEventListener("click", ()=> setTheme(theme==="dark"?"light":"dark"));
+document.getElementById("theme-select")?.addEventListener("change", e=> setTheme(e.target.value));
+
+/* ── TOAST ── */
+function toast(msg, type="info", duration=3500){
+  const wrap = document.getElementById("toast-wrap");
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  const icons = {success:"check-circle", error:"x-circle", info:"info"};
+  t.innerHTML = `<i data-lucide="${icons[type]||'info'}" style="width:14px;height:14px;flex-shrink:0"></i>${msg}`;
+  wrap.appendChild(t);
+  lucide.createIcons({nodes:[t]});
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transform="translateY(8px)"; t.style.transition="all .25s"; setTimeout(()=>t.remove(), 250); }, duration);
+}
+
+/* ── API KEY ── */
+function saveApiKey(key){
+  apiKey = key.trim();
+  if(!apiKey){ toast("Please enter a valid API key","error"); return; }
+  document.getElementById("api-banner").classList.add("hidden");
+  document.getElementById("ai-status-badge").textContent = "✓ API Key Set";
+  document.getElementById("ai-status-badge").className = "badge badge-success";
+  toast("Grok API key saved!","success");
+}
+document.getElementById("save-key-btn")?.addEventListener("click", ()=> saveApiKey(document.getElementById("api-key-input").value));
+document.getElementById("api-key-input")?.addEventListener("keydown", e=>{ if(e.key==="Enter") saveApiKey(e.target.value); });
+document.getElementById("settings-save-btn")?.addEventListener("click", ()=> saveApiKey(document.getElementById("settings-api-input").value));
+
+/* ── NAVIGATION ── */
+const panels = document.querySelectorAll(".panel");
+const navItems = document.querySelectorAll(".nav-item[data-panel]");
+function showPanel(id){
+  panels.forEach(p=>p.classList.remove("active"));
+  navItems.forEach(n=>n.classList.remove("active"));
+  document.getElementById("panel-"+id)?.classList.add("active");
+  document.querySelector(`.nav-item[data-panel="${id}"]`)?.classList.add("active");
+}
+navItems.forEach(n=>{
+  n.addEventListener("click",()=>showPanel(n.dataset.panel));
+  n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ") showPanel(n.dataset.panel);});
+});
+document.getElementById("settings-btn")?.addEventListener("click",()=>showPanel("settings"));
+
+/* ── FONT SIZE ── */
+document.getElementById("font-size-select")?.addEventListener("change", e=>{
+  document.querySelectorAll(".code-editor,.code-output,.diff-view").forEach(el=>el.style.fontSize=e.target.value+"px");
+});
+
+/* ── LINE COUNT ── */
+const codeInput = document.getElementById("code-input");
+codeInput?.addEventListener("input", ()=>{
+  const n = codeInput.value.split("\n").length;
+  document.getElementById("line-count").textContent = codeInput.value.trim() ? n+" lines" : "0 lines";
+});
+
+/* ── OUTPUT TABS ── */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    const which = tab.dataset.tab;
+    document.getElementById("output-code").style.display = which==="code"?"block":"none";
+    document.getElementById("output-diff").style.display = which==="diff"?"block":"none";
+  });
+});
+
+/* ── SYNTAX HIGHLIGHT ── */
+function highlight(code){
+  let o = code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  o = o.replace(/(#[^\n]*|\/\/[^\n]*)/g,'<span class="cmt">$1</span>');
+  o = o.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/g,'<span class="str">$1</span>');
+  o = o.replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+  o = o.replace(/\b(def|class|import|from|return|if|else|elif|for|while|in|not|and|or|True|False|None|lambda|async|await|with|try|except|finally|raise|const|let|var|function|null|undefined|this|export|default|public|private|static|void|int|float|bool|str|list|dict)\b/g,'<span class="kw">$1</span>');
+  o = o.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g,'<span class="fn">$1</span>');
+  return o;
+}
+
+/* ── RENDER DIFF ── */
+function renderDiff(diffData){
+  const origEl = document.getElementById("diff-original");
+  const optEl  = document.getElementById("diff-optimized");
+  const inlineEl= document.getElementById("output-diff");
+  if(!diffData||!diffData.length){ origEl.innerHTML=optEl.innerHTML=inlineEl.innerHTML="<div style='padding:2rem;color:var(--text-faint);text-align:center'>No diff available yet</div>"; return; }
+
+  let adds=0, removes=0;
+  function buildPane(lines, type){
+    return lines.filter(l=> type==="original" ? l.type!=="added" : l.type!=="removed")
+      .map(l=>{
+        if(l.type==="added"){ adds++; return `<div class="diff-line added"><span class="diff-prefix a">+</span><span class="diff-content added">${l.content.replace(/</g,"&lt;")}</span></div>`; }
+        if(l.type==="removed"){ removes++; return `<div class="diff-line removed"><span class="diff-prefix r">−</span><span class="diff-content removed">${l.content.replace(/</g,"&lt;")}</span></div>`; }
+        return `<div class="diff-line context"><span class="diff-prefix c"> </span><span class="diff-content context">${l.content.replace(/</g,"&lt;")}</span></div>`;
+      }).join("");
+  }
+
+  origEl.innerHTML = buildPane(diffData, "original");
+  optEl.innerHTML  = buildPane(diffData, "optimized");
+
+  // inline diff for output tab
+  inlineEl.innerHTML = diffData.map(l=>{
+    if(l.type==="added")   return `<div class="diff-line added"><span class="diff-prefix a">+</span><span class="diff-content added">${l.content.replace(/</g,"&lt;")}</span></div>`;
+    if(l.type==="removed") return `<div class="diff-line removed"><span class="diff-prefix r">−</span><span class="diff-content removed">${l.content.replace(/</g,"&lt;")}</span></div>`;
+    return `<div class="diff-line context"><span class="diff-prefix c"> </span><span class="diff-content context">${l.content.replace(/</g,"&lt;")}</span></div>`;
+  }).join("");
+
+  document.getElementById("diff-stats").textContent = `+${adds} added  −${removes} removed`;
+}
+
+/* ── METRICS ── */
+function updateMetrics(metrics, analysis){
+  if(!metrics) return;
+  document.getElementById("m-lines").textContent = `${metrics.original_lines}→${metrics.optimized_lines}`;
+  document.getElementById("m-complexity").textContent = `${metrics.original_complexity}→${metrics.optimized_complexity}`;
+  document.getElementById("m-reduction").textContent = metrics.chars_reduction > 0 ? `-${metrics.chars_reduction}%` : `${Math.abs(metrics.chars_reduction)}%`;
+  if(analysis){
+    const score = analysis.score;
+    const scoreEl = document.getElementById("m-score");
+    scoreEl.textContent = score+"/100";
+    scoreEl.parentElement.className = "metric "+(score>=80?"good":score>=60?"warn":"bad");
+    document.getElementById("m-issues").textContent = analysis.total||0;
+    document.getElementById("m-issues").parentElement.className = "metric "+(!analysis.total?"good":analysis.errors?"bad":"warn");
+  }
+}
+
+/* ── OPTIMIZE ── */
+document.getElementById("optimize-btn")?.addEventListener("click", async ()=>{
+  if(!apiKey){ toast("Please set your Grok API key first","error"); return; }
+  const code = codeInput?.value.trim();
+  if(!code){ toast("Please paste some code first","error"); codeInput?.focus(); return; }
+
+  const lang = document.getElementById("lang-select").value;
+  const mode = document.getElementById("mode-select").value;
+  const btn  = document.getElementById("optimize-btn");
+  const label= document.getElementById("opt-label");
+  btn.disabled = true;
+  label.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+
+  const outCode = document.getElementById("output-code");
+  outCode.className = "code-output";
+  outCode.innerHTML = `<div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4)"><div class="spinner"></div><span style="font-family:var(--font-body);font-size:var(--text-xs);color:var(--text-muted)">Grok is analyzing your code…</span></div>`;
+  document.getElementById("output-diff").innerHTML = "";
+
+  try {
+    const res = await fetch(`${API_BASE}/api/optimize`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ code, language: lang, mode, api_key: apiKey })
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e.detail||"Optimization failed"); }
+    const data = await res.json();
+    lastOptimized = data;
+    lastOriginal  = code;
+
+    // Render optimized code
+    outCode.className = "code-output";
+    outCode.innerHTML = `<pre style="margin:0;white-space:pre-wrap;word-break:break-word">${highlight(data.optimized_code)}</pre>`;
+
+    // Render diff
+    renderDiff(data.diff);
+
+    // Run analysis too for metrics
+    const aRes = await fetch(`${API_BASE}/api/analyze`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ code: data.optimized_code, language: lang, api_key: apiKey })
+    });
+    const aData = aRes.ok ? await aRes.json() : null;
+
+    updateMetrics(data.metrics, aData);
+
+    // Enable export
+    document.getElementById("export-pdf-btn").disabled = false;
+
+    // Session stats
+    sessionStats.opts++;
+    sessionStats.issues += aData?.total || 0;
+    sessionStats.lines  += Math.abs(data.metrics?.lines_delta || 0);
+    addToHistory({ code, lang, mode, data, analysis: aData, time: new Date() });
+    updateDashboard();
+    toast("Code optimized successfully!","success");
+  } catch(e){
+    outCode.innerHTML = `<div style="padding:var(--space-4);color:var(--error);font-family:var(--font-body);font-size:var(--text-xs)"><strong>Error:</strong> ${e.message}</div>`;
+    toast(e.message, "error");
+  } finally {
+    btn.disabled = false;
+    label.textContent = "Optimize";
+    lucide.createIcons();
+  }
+});
+
+/* ── CLEAR ── */
+document.getElementById("clear-btn")?.addEventListener("click", ()=>{
+  codeInput.value = "";
+  document.getElementById("line-count").textContent = "0 lines";
+  const out = document.getElementById("output-code");
+  out.className = "code-output empty";
+  out.innerHTML = `<i data-lucide="zap" style="width:36px;height:36px;opacity:.3"></i><p><strong>Optimized code appears here</strong></p><p style="font-size:var(--text-xs)">Paste code → choose language → click Optimize</p>`;
+  lucide.createIcons();
+  ["m-lines","m-complexity","m-reduction","m-score","m-issues"].forEach(id=>{ const el=document.getElementById(id); if(el)el.textContent="—"; });
+  document.getElementById("export-pdf-btn").disabled = true;
+});
+
+/* ── COPY ── */
+document.getElementById("copy-btn")?.addEventListener("click", ()=>{
+  if(!lastOptimized) return;
+  navigator.clipboard.writeText(lastOptimized.optimized_code).then(()=> toast("Copied to clipboard!","success"));
+});
+document.getElementById("diff-copy-btn")?.addEventListener("click", ()=>{
+  if(!lastOptimized?.diff) return;
+  const txt = lastOptimized.diff.map(l=>{ const p=l.type==="added"?"+ ":l.type==="removed"?"- ":" "; return p+l.content; }).join("\n");
+  navigator.clipboard.writeText(txt).then(()=> toast("Diff copied!","success"));
+});
+
+/* ── EXPORT PDF ── */
+document.getElementById("export-pdf-btn")?.addEventListener("click", async ()=>{
+  if(!lastOptimized){ toast("Optimize code first","error"); return; }
+  const btn = document.getElementById("export-pdf-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="dots"><span></span><span></span><span></span></span> Generating…';
+  try {
+    const res = await fetch(`${API_BASE}/api/export-pdf`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        optimized_code: lastOptimized.optimized_code,
+        language: document.getElementById("lang-select").value,
+        metrics: lastOptimized.metrics||{},
+        analysis: lastOptimized.analysis||{}
+      })
+    });
+    if(!res.ok) throw new Error("PDF generation failed");
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "optimization-report.pdf"; a.click();
+    URL.revokeObjectURL(url);
+    toast("PDF report downloaded!","success");
+  } catch(e){ toast(e.message,"error"); }
+  finally { btn.disabled=false; btn.innerHTML='<i data-lucide="file-text"></i> Export PDF'; lucide.createIcons(); }
+});
+
+/* ── ANALYSIS ── */
+document.getElementById("analyze-btn")?.addEventListener("click", async ()=>{
+  if(!apiKey){ toast("Please set your Grok API key first","error"); return; }
+  const code = document.getElementById("analysis-input")?.value.trim();
+  if(!code){ toast("Please paste code to analyze","error"); return; }
+  const lang = document.getElementById("analysis-lang").value;
+  const btn  = document.getElementById("analyze-btn");
+  const lbl  = document.getElementById("analyze-label");
+  btn.disabled = true;
+  lbl.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+
+  const results = document.getElementById("analysis-results");
+  results.innerHTML = `<div style="padding:var(--space-8);text-align:center"><div class="spinner" style="margin:0 auto var(--space-3)"></div><p style="font-size:var(--text-xs);color:var(--text-muted)">Grok is analyzing your code…</p></div>`;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/analyze`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ code, language: lang, api_key: apiKey })
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e.detail||"Analysis failed"); }
+    const data = await res.json();
+
+    // Score bar
+    const sb = document.getElementById("score-bar");
+    sb.style.display = "flex";
+    const scoreEl = document.getElementById("quality-score");
+    scoreEl.textContent = data.score+"/100";
+    scoreEl.style.color = data.score>=80?"var(--success)":data.score>=60?"var(--warning)":"var(--error)";
+    document.getElementById("err-badge").textContent  = `${data.errors} error${data.errors!==1?"s":""}`;
+    document.getElementById("warn-badge").textContent = `${data.warnings} warning${data.warnings!==1?"s":""}`;
+    document.getElementById("info-badge").textContent = `${data.infos} info`;
+
+    // Issues
+    const sevIcon = {error:"x-circle",warning:"alert-triangle",info:"info"};
+    const sevClass= {error:"badge-error",warning:"badge-warning",info:"badge-primary"};
+    results.innerHTML = data.issues.length ? data.issues.map(iss=>`
+      <div class="issue-card">
+        <i data-lucide="${sevIcon[iss.severity]||'info'}" class="issue-sev" style="color:var(--${iss.severity==='error'?'error':iss.severity==='warning'?'warning':'primary'})"></i>
+        <div class="issue-body">
+          <div class="issue-title">${iss.title}</div>
+          <div class="issue-desc">${iss.description}</div>
+          <div class="issue-fix">💡 ${iss.fix}</div>
+          <div class="issue-line">Line ${iss.line}</div>
+        </div>
+        <span class="badge ${sevClass[iss.severity]||'badge-primary'}" style="flex-shrink:0;align-self:flex-start">${iss.severity}</span>
+      </div>
+    `).join("") : `<div style="padding:var(--space-8);text-align:center;color:var(--success)"><i data-lucide="check-circle" style="width:32px;height:32px;margin:0 auto var(--space-3);display:block"></i><p style="font-size:var(--text-sm);font-weight:600">No issues found!</p><p style="font-size:var(--text-xs)">Your code looks clean.</p></div>`;
+    lucide.createIcons();
+    toast(`Analysis complete: ${data.total} issues found`,"success");
+  } catch(e){ results.innerHTML=`<div style="padding:var(--space-4);color:var(--error);font-size:var(--text-xs)">${e.message}</div>`; toast(e.message,"error"); }
+  finally { btn.disabled=false; lbl.textContent="Analyze"; lucide.createIcons(); }
+});
+
+/* ── CHAT ── */
+const chatMsgs  = document.getElementById("chat-msgs");
+const chatInput = document.getElementById("chat-input");
+
+function addMsg(content, role){
+  const b = document.createElement("div");
+  b.className = `bubble ${role==="user"?"user":""}`;
+  const formatted = content
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre>$1</pre>')
+    .replace(/\n/g,"<br>");
+  b.innerHTML=`<div class="avatar">${role==="user"?"U":"AI"}</div><div class="msg">${formatted}</div>`;
+  chatMsgs?.appendChild(b);
+  chatMsgs?.scrollTo({top:chatMsgs.scrollHeight,behavior:"smooth"});
+}
+
+async function sendChat(){
+  if(!apiKey){ toast("Please set your Grok API key first","error"); return; }
+  const msg = chatInput?.value.trim();
+  if(!msg) return;
+  addMsg(msg,"user");
+  chatInput.value = "";
+  chatInput.style.height = "auto";
+
+  const thinking = document.createElement("div");
+  thinking.className = "bubble";
+  thinking.id = "thinking";
+  thinking.innerHTML = `<div class="avatar">AI</div><div class="msg"><span class="dots"><span></span><span></span><span></span></span></div>`;
+  chatMsgs?.appendChild(thinking);
+  chatMsgs?.scrollTo({top:chatMsgs.scrollHeight,behavior:"smooth"});
+
+  try {
+    const res = await fetch(`${API_BASE}/api/chat`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ message: msg, code_context: lastOriginal||"", api_key: apiKey })
+    });
+    document.getElementById("thinking")?.remove();
+    if(!res.ok){ const e=await res.json(); throw new Error(e.detail); }
+    const data = await res.json();
+    addMsg(data.reply,"assistant");
+  } catch(e){
+    document.getElementById("thinking")?.remove();
+    addMsg("Sorry, I encountered an error: "+e.message,"assistant");
+  }
+}
+
+document.getElementById("send-btn")?.addEventListener("click",sendChat);
+chatInput?.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();} });
+chatInput?.addEventListener("input",()=>{ chatInput.style.height="auto"; chatInput.style.height=Math.min(chatInput.scrollHeight,120)+"px"; });
+
+/* ── HISTORY / DASHBOARD ── */
+function addToHistory(item){
+  history.unshift(item);
+  updateHistoryCards();
+  updateHistoryTable();
+}
+
+function updateHistoryCards(){
+  const c = document.getElementById("history-cards");
+  if(!history.length) return;
+  c.innerHTML = history.map(h=>`
+    <div class="kpi-card" style="display:flex;align-items:center;gap:var(--space-3)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:var(--text-xs);font-weight:600;color:var(--text);font-family:var(--font-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.code.substring(0,50)}…</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${h.lang} · ${h.mode} · ${h.time.toLocaleTimeString()}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--space-2);flex-shrink:0">
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--error)">${h.data.metrics?.original_lines||'?'}L</span>
+        <i data-lucide="arrow-right" style="width:11px;height:11px;color:var(--text-faint)"></i>
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--success)">${h.data.metrics?.optimized_lines||'?'}L</span>
+      </div>
+    </div>
+  `).join("");
+  lucide.createIcons();
+}
+
+function updateHistoryTable(){
+  const tbody = document.getElementById("history-tbody");
+  if(!history.length) return;
+  tbody.innerHTML = history.slice(0,10).map(h=>`
+    <tr>
+      <td class="mono" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.code.split("\n")[0].substring(0,40)}</td>
+      <td><span class="badge badge-primary">${h.lang}</span></td>
+      <td class="mono" style="color:var(--error)">${h.data.metrics?.original_lines||'?'}</td>
+      <td class="mono" style="color:var(--success)">${h.data.metrics?.optimized_lines||'?'}</td>
+      <td>${h.analysis?.total||'?'}</td>
+      <td><span class="badge ${h.data.metrics?.optimized_complexity?.includes('n²')?"badge-error":"badge-success"}">${h.data.metrics?.optimized_complexity||'?'}</span></td>
+      <td style="color:var(--text-muted)">${h.time.toLocaleTimeString()}</td>
+    </tr>
+  `).join("");
+}
+
+function updateDashboard(){
+  document.getElementById("kpi-opts").textContent  = sessionStats.opts;
+  document.getElementById("kpi-fixed").textContent = sessionStats.issues;
+  document.getElementById("kpi-lines").textContent = sessionStats.lines;
+  if(sessionStats.opts>0)
+    document.getElementById("kpi-gain").textContent = "+" + Math.round(sessionStats.totalGain/sessionStats.opts)+"%";
+}
+
+/* ── INIT ── */
+lucide.createIcons();
+})();
+</script>
+</body>
+</html>
+
+
